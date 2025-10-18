@@ -14,10 +14,15 @@ public class ChessBoard : MonoBehaviour
     
     private string[,] matrix;
     private readonly (int row, int col)[] directions = { (0, 1), (1, 0), (1, 1), (1, -1) };
-
+    private string gameMode = "pvp";
     void Start()
     {
         InitializeGame();
+    }
+    public void SetGameMode(string mode)
+    {
+        gameMode = mode;
+        Debug.Log($"Game mode set to: {mode}");
     }
     public void RestartGame()
     {
@@ -52,9 +57,12 @@ public class ChessBoard : MonoBehaviour
             else Debug.LogError($"No Cell component at [{i}, {j}]!", cellObj);
         }
 
-        var bot = FindFirstObjectByType<SimpleBot>();
-        if (bot) bot.Initialize(this, cells);
-        else Debug.LogWarning("SimpleBot not found!", this);
+        if (gameMode == "pve")
+        {
+            var bot = FindFirstObjectByType<SimpleBot>();
+            if (bot) bot.Initialize(this, cells);
+            else Debug.LogWarning("SimpleBot not found!", this);
+        }
     }
 
     public bool MakeMove(int row, int col, string player)
@@ -62,10 +70,6 @@ public class ChessBoard : MonoBehaviour
         if (IsOutOfBounds(row, col) || !IsCellEmpty(row, col)) return false;
 
         matrix[row, col] = player;
-        
-        // Notify UI about move
-        var uiManager = FindFirstObjectByType<UIManager>();
-        if (uiManager != null) uiManager.IncrementMoveCount();
 
         if (CheckWin(row, col))
         {
@@ -74,10 +78,18 @@ public class ChessBoard : MonoBehaviour
             DisableAllCells();
             return true;
         }
-
+        if (CheckDraw())
+        {
+            Debug.Log("Game draw!");
+            OnGameWin?.Invoke("draw");
+            DisableAllCells();
+            return true;
+        }
         CurrentPlayer = CurrentPlayer == "x" ? "o" : "x";
         Debug.Log($"Next turn: {CurrentPlayer}");
-        if (CurrentPlayer == "o") StartCoroutine(TriggerBotMove());
+        if (gameMode == "pve" && CurrentPlayer == "o") 
+            StartCoroutine(TriggerBotMove());
+        
         return true;
     }
 
@@ -88,7 +100,14 @@ public class ChessBoard : MonoBehaviour
         if (bot) bot.MakeMove();
         else Debug.LogWarning("SimpleBot not found!", this);
     }
-
+    private bool CheckDraw()
+    {
+        for (int i = 0; i < rows; i++)
+        for (int j = 0; j < columns; j++)
+            if (string.IsNullOrEmpty(matrix[i, j]))
+                return false;
+        return true;
+    }
     public bool CheckWin(int row, int col)
     {
         string value = matrix[row, col];
