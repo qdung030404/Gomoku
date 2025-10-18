@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour
     public Button backToMenuButton;
 
     private ChessBoard chessBoard;
-    private string currentGameMode = "pvp"; // "pvp" or "pve"
+    private string currentGameMode = "pvp";
 
     public void Start()
     {
@@ -120,7 +120,6 @@ public class GameManager : MonoBehaviour
 
         gameOverPanel.SetActive(false);
         gamePanel.SetActive(true);
-        
     }
 
     public void ShowGameOver(string winner)
@@ -135,15 +134,12 @@ public class GameManager : MonoBehaviour
             gameOverText.text = currentGameMode == "pvp" ? "Player O Wins!" : "Bot Wins!";
         else
             gameOverText.text = "It's a Draw!";
-        
     }
 
     void QuitGame()
     {
         #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
-        #else
-            Application.Quit();
         #endif
     }
 }

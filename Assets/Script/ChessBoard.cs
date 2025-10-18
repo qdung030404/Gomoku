@@ -28,11 +28,10 @@ public class ChessBoard : MonoBehaviour
     {
         InitializeGame();
     }
-
-    // ĐỔI TÊN CreateBoard THÀNH InitializeGame VÀ THÊM RESET
+    
     void InitializeGame()
     {
-        CurrentPlayer = "x"; // Reset về player X
+        CurrentPlayer = "x";
         matrix = new string[rows, columns];
         if (gridLayout) gridLayout.constraintCount = columns;
         CreateBoard();
@@ -92,7 +91,6 @@ public class ChessBoard : MonoBehaviour
         
         return true;
     }
-
     IEnumerator TriggerBotMove()
     {
         yield return new WaitForSeconds(0.5f);
@@ -118,7 +116,6 @@ public class ChessBoard : MonoBehaviour
                 return true;
         return false;
     }
-
     int CountDirection(int row, int col, int di, int dj, string value)
     {
         int count = 0;
@@ -130,7 +127,6 @@ public class ChessBoard : MonoBehaviour
         }
         return count;
     }
-
     public bool TryMoveAndCheckWin(int row, int col, string symbol)
     {
         if (IsOutOfBounds(row, col) || !IsCellEmpty(row, col)) return false;
@@ -139,11 +135,9 @@ public class ChessBoard : MonoBehaviour
         matrix[row, col] = "";
         return isWin;
     }
-
     public string GetMatrixValue(int row, int col) => IsOutOfBounds(row, col) ? null : matrix[row, col];
     public bool IsCellEmpty(int row, int col) => string.IsNullOrEmpty(GetMatrixValue(row, col));
     public bool IsOutOfBounds(int row, int col) => row < 0 || row >= rows || col < 0 || col >= columns;
-
     public List<(int row, int col)> GetAllEmptyCells()
     {
         List<(int, int)> emptyCells = new();
@@ -152,7 +146,6 @@ public class ChessBoard : MonoBehaviour
             if (IsCellEmpty(i, j)) emptyCells.Add((i, j));
         return emptyCells;
     }
-
     void DisableAllCells()
     {
         foreach (Transform child in board)
