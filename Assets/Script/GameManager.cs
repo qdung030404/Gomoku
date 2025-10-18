@@ -52,14 +52,12 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        // Update current player display during gameplay
         if (gamePanel.activeInHierarchy && chessBoard != null && currentPlayerText != null)
         {
             string playerName = chessBoard.CurrentPlayer == "x" ? "Player X" : "Player O";
             string modeInfo = currentGameMode == "pve" && chessBoard.CurrentPlayer == "o" ? " (Bot)" : "";
             currentPlayerText.text = $"Current: {playerName}{modeInfo}";
             
-            // Update game mode text
             if (gameModeText != null)
                 gameModeText.text = currentGameMode == "pvp" ? "Mode: PvP" : "Mode: PvE";
         }
