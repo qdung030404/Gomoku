@@ -9,6 +9,7 @@ public class ChessBoard : MonoBehaviour
     public Transform board;
     public GridLayoutGroup gridLayout;
     public int columns = 15, rows = 15;
+    public System.Action<string> OnGameWin;
     public string CurrentPlayer { get; set; } = "x";
     
     private string[,] matrix;
@@ -16,11 +17,21 @@ public class ChessBoard : MonoBehaviour
 
     void Start()
     {
+        InitializeGame();
+    }
+    public void RestartGame()
+    {
+        InitializeGame();
+    }
+
+    // ĐỔI TÊN CreateBoard THÀNH InitializeGame VÀ THÊM RESET
+    void InitializeGame()
+    {
+        CurrentPlayer = "x"; // Reset về player X
         matrix = new string[rows, columns];
         if (gridLayout) gridLayout.constraintCount = columns;
         CreateBoard();
     }
-
     void CreateBoard()
     {
         if (!board || !cellPrefab) { Debug.LogError("Board or CellPrefab missing!", this); return; }
@@ -51,9 +62,15 @@ public class ChessBoard : MonoBehaviour
         if (IsOutOfBounds(row, col) || !IsCellEmpty(row, col)) return false;
 
         matrix[row, col] = player;
+        
+        // Notify UI about move
+        var uiManager = FindFirstObjectByType<UIManager>();
+        if (uiManager != null) uiManager.IncrementMoveCount();
+
         if (CheckWin(row, col))
         {
             Debug.Log($"Player {player} wins!");
+            OnGameWin?.Invoke(player);
             DisableAllCells();
             return true;
         }
